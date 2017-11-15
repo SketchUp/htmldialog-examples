@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="../vendor/Semantic-UI-CSS/semantic.min.css" rel="stylesheet">
+  <script src="../vendor/jquery.js"></script>
+  <script src="../vendor/Semantic-UI-CSS/semantic.min.js"></script>
+  <script src="../vendor/vue.js"></script>
+  <style>
+    /* Give the content some space */
+    body {
+      padding: 15px;
+    }
+    /* Fix footer position to bottom */
+    .footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      border-top: 1px solid silver;
+    }
+    /* Define a 128x128 preview square */
+    .preview {
+      position: relative;
+      display: inline-block;
+      width: 128px;
+      height: 128px;
+      font-size: 0px;
+      background: url('../images/transparent.png');
+      overflow: hidden;
+    }
+    .preview span {
+      display: inline-block;
+      width: 50%;
+      height: 100%;
+    }
+    .preview img {
+      display: inline-block;
+      max-width: 100%;
+      max-height: 100%;
+      /* Center element */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+    }
+    /* Fine tune input field sizes */
+    .ui.form .field .ui.label {
+      width: 60px;
+    }
+    .ui.form .field .ui.input {
+      width: 128px;
+    }
+    .ui.form .field .ui.input input {
+      width: 60px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <template v-if="material">
+      <h2>{{ material.display_name }}</h2>
+
+      <div class="ui padded grid">
+        <div class="eight wide column">
+
+          <h3>Color</h3>
+          <p class="preview">
+            <span v-bind:style="colorPreviewSolid">&nbsp;</span>
+            <span v-bind:style="colorPreviewAlpha">&nbsp;</span>
+          </p>
+
+          <form class="ui form">
+
+            <div class="field">
+              <div class="ui mini labeled input">
+                <div class="ui label">Red</div>
+                <input type="number" placeholder="Red"
+                       v-model.number="material.color.red">
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="ui mini labeled input">
+                <div class="ui label">Green</div>
+                <input type="number" placeholder="Green"
+                       v-model.number="material.color.green">
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="ui mini labeled input">
+                <div class="ui label">Blue</div>
+                <input type="number" placeholder="Blue"
+                       v-model.number="material.color.blue">
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="ui mini labeled input">
+                <div class="ui label">Opacity</div>
+                <input type="number" placeholder="Opacity"
+                       v-model.number="opacity">
+              </div>
+            </div>
+
+          </form>
+
+        </div>
+        <div class="eight wide column">
+
+          <template v-if="material.texture">
+            <h3>Texture</h3>
+            <p class="preview">
+              <img v-bind:src="texturePreview">
+            </p>
+            <div class="ui one column vertically padded grid">
+
+              <div class="column">
+                <div class="ui label">
+                  Pixel Size:
+                  <div class="detail">
+                    {{ material.texture.pixel_width }}
+                    x
+                    {{ material.texture.pixel_height }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="column">
+                <div class="ui label">
+                  Model Size:
+                  <div class="detail">
+                    {{ material.texture.model_width_formatted }}
+                    x
+                    {{ material.texture.model_height_formatted }}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="ui form">
+              <div class="inline field">
+                <div class="ui slider checkbox">
+                  <input type="checkbox"
+                         v-bind:value="material.colorize_type"
+                         v-bind:checked="material.colorize_type == 1"
+                         v-on:change="material.colorize_type = ($event.target.checked) ? 1 : 0"
+                         >
+                  <label>Colorize</label>
+                </div>
+                <label></label>
+              </div>
+            </div>
+
+          </template>
+
+        </div>
+      </div>
+
+    </template>
+    <template v-else>
+      <h2>[No Material Selected]</h2>
+      <p>Select an entity with a material.</p>
+    </template>
+
+    <div class="ui padded grid footer">
+      <div class="four wide column">
+        <button class="ui button" v-on:click="save">Save</button>
+      </div>
+      <div class="twelve wide column right aligned">
+        <button class="ui button" v-on:click="cancel">Cancel</button>
+        <button class="ui button" v-on:click="accept">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        tick: 0,
+        material: null,
+      },
+      computed: {
+        colorPreviewAlpha: function() {
+          if (this.material === null) {
+            return {};
+          }
+          var r = this.material.color.red;
+          var g = this.material.color.green;
+          var b = this.material.color.blue;
+          var a = this.material.alpha;
+          return {
+            backgroundColor: `rgba(${r},${g},${b},${a})`
+          };
+        },
+        colorPreviewSolid: function() {
+          if (this.material === null) {
+            return {};
+          }
+          var r = this.material.color.red;
+          var g = this.material.color.green;
+          var b = this.material.color.blue;
+          return {
+            backgroundColor: `rgb(${r},${g},${b})`
+          };
+        },
+        texturePreview: function() {
+          // Forces the browser to reload the image.
+          return `../images/preview.png?rnd=${this.tick}`
+        },
+        opacity: {
+          get() {
+            return (this.material) ? Math.round(this.material.alpha * 100) : 0;
+          },
+          set(value) {
+            this.material.alpha = value / 100.0
+          }
+        }
+      },
+      methods: {
+        save: function() {
+          sketchup.save(this.material);
+        },
+        accept: function() {
+          sketchup.accept(this.material);
+        },
+        cancel: function() {
+          sketchup.cancel();
+        },
+      },
+      mounted: function() {
+        sketchup.ready();
+      },
+    });
+
+    function updateMaterial(material) {
+      app.tick += 1; // Update to ensure thumbnail is reloaded.
+      app.material = material;
+    }
+  </script>
+</body>
+</html>

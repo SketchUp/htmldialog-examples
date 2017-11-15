@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../vendor/vue.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <p><label>Name: <input v-model="name"></label></p>
+    <p><label>Pokes: <input v-model.number="num_pokes"></label></p>
+    <p><button v-on:click="poke">Poke {{ name }}!</button></p>
+    <p><button v-on:click="say_something">Greet</button></p>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        name: 'Thom',
+        num_pokes: 3,
+      },
+      methods: {
+        poke: function() {
+          sketchup.poke(this.name, this.num_pokes);
+        },
+        say_something: function() {
+          sketchup.say("Hello " + this.name);
+          sketchup.say("How are you?");
+        },
+      }
+    });
+  </script>
+
+</body>
+</html>

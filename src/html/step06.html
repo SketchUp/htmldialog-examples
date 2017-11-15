@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="../vendor/Semantic-UI-CSS/semantic.min.css" rel="stylesheet">
+  <script src="../vendor/jquery.js"></script>
+  <script src="../vendor/Semantic-UI-CSS/semantic.min.js"></script>
+  <script src="../vendor/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <template v-if="material">
+      <h2>{{ material.display_name }}</h2>
+
+      <h3>Color</h3>
+
+      <form class="ui form">
+
+        <div class="field">
+          <div class="ui mini labeled input">
+            <div class="ui label">Red</div>
+            <input type="number" placeholder="Red"
+                    v-model.number="material.color.red">
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="ui mini labeled input">
+            <div class="ui label">Green</div>
+            <input type="number" placeholder="Green"
+                    v-model.number="material.color.green">
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="ui mini labeled input">
+            <div class="ui label">Blue</div>
+            <input type="number" placeholder="Blue"
+                    v-model.number="material.color.blue">
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="ui mini labeled input">
+            <div class="ui label">Opacity</div>
+            <input type="number" placeholder="Opacity"
+                    v-model.number="opacity">
+          </div>
+        </div>
+
+      </form>
+
+      <template v-if="material.texture">
+        <h3>Texture</h3>
+
+        <div class="ui label">
+          Pixel Size:
+          <div class="detail">
+            {{ material.texture.pixel_width }}
+            x
+            {{ material.texture.pixel_height }}
+          </div>
+        </div>
+
+        <div class="ui label">
+          Model Size:
+          <div class="detail">
+            {{ material.texture.model_width_formatted }}
+            x
+            {{ material.texture.model_height_formatted }}
+          </div>
+        </div>
+
+        <div class="ui form">
+          <div class="inline field">
+            <div class="ui slider checkbox">
+              <input type="checkbox"
+                      v-bind:value="material.colorize_type"
+                      v-bind:checked="material.colorize_type == 1"
+                      v-on:change="material.colorize_type = ($event.target.checked) ? 1 : 0"
+                      >
+              <label>Colorize</label>
+            </div>
+            <label></label>
+          </div>
+        </div>
+
+      </template>
+
+    </template>
+    <template v-else>
+      <h2>[No Material Selected]</h2>
+      <p>Select an entity with a material.</p>
+    </template>
+
+    <p>
+      <button class="ui button" v-on:click="save">Save</button>
+      <button class="ui button" v-on:click="cancel">Cancel</button>
+      <button class="ui button" v-on:click="accept">Accept</button>
+    </p>
+
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        material: null,
+      },
+      computed: {
+        opacity: {
+          get() {
+            return (this.material) ? Math.round(this.material.alpha * 100) : 0;
+          },
+          set(value) {
+            this.material.alpha = value / 100.0
+          }
+        }
+      },
+      methods: {
+        save: function() {
+          sketchup.save(this.material);
+        },
+        accept: function() {
+          sketchup.accept(this.material);
+        },
+        cancel: function() {
+          sketchup.cancel();
+        },
+      },
+      mounted: function() {
+        sketchup.ready();
+      },
+    });
+
+    function updateMaterial(material) {
+      app.material = material;
+    }
+  </script>
+</body>
+</html>

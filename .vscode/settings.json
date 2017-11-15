@@ -1,0 +1,11 @@
+{
+  "ruby.rubocop.onSave": false,
+  "ruby.lint": {
+    "ruby": false,
+    "rubocop": false,
+    "ruby-lint": false
+  },
+  "dimmer.enabled": false,
+  "dimmer.opacity": 20,
+  "cSpell.enabled": false
+}

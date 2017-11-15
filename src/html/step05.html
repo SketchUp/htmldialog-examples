@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../vendor/vue.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <template v-if="material">
+      <h2>{{ material.display_name }}</h2>
+
+      <h3>Color</h3>
+
+      <p>
+        <label>Red
+          <input type="number" placeholder="Red"
+                 v-model.number="material.color.red">
+        </label>
+      </p>
+
+      <p>
+        <label>Green</div>
+          <input type="number" placeholder="Green"
+                 v-model.number="material.color.green">
+        </label>
+      </p>
+
+        <p>
+          <label>Blue</div>
+            <input type="number" placeholder="Blue"
+                   v-model.number="material.color.blue">
+          </label>
+        </p>
+
+        <p>
+          <label>Opacity</div>
+            <input type="number" placeholder="Opacity"
+                   v-model.number="opacity">
+          </label>
+        </p>
+
+      <template v-if="material.texture">
+        <h3>Texture</h3>
+
+        <p>
+          Pixel Size:
+            {{ material.texture.pixel_width }}
+            x
+            {{ material.texture.pixel_height }}
+        </p>
+
+        <p>
+          Model Size:
+            {{ material.texture.model_width_formatted }}
+            x
+            {{ material.texture.model_height_formatted }}
+        </p>
+
+        <p>
+          <label>Colorize
+            <input type="checkbox"
+                    v-bind:value="material.colorize_type"
+                    v-bind:checked="material.colorize_type == 1"
+                    v-on:change="material.colorize_type = ($event.target.checked) ? 1 : 0"
+                    >
+          </label>
+        </p>
+
+      </template>
+
+
+    </template>
+    <template v-else>
+      <h2>[No Material Selected]</h2>
+      <p>Select an entity with a material.</p>
+    </template>
+
+    <div class="footer">
+      <button v-on:click="save">Save</button>
+      <button v-on:click="cancel">Cancel</button>
+      <button v-on:click="accept">Accept</button>
+    </div>
+
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        material: null,
+      },
+      computed: {
+        opacity: {
+          get() {
+            return (this.material) ? Math.round(this.material.alpha * 100) : 0;
+          },
+          set(value) {
+            this.material.alpha = value / 100.0
+          }
+        }
+      },
+      methods: {
+        save: function() {
+          sketchup.save(this.material);
+        },
+        accept: function() {
+          sketchup.accept(this.material);
+        },
+        cancel: function() {
+          sketchup.cancel();
+        },
+      },
+      mounted: function() {
+        sketchup.ready();
+      },
+    });
+
+    function updateMaterial(material) {
+      app.material = material;
+    }
+  </script>
+</body>
+</html>
