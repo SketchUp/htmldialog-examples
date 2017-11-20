@@ -13,6 +13,8 @@ module MaterialInspector
 TUTORIALS = self
 module TutorialController
 
+  OSX = Sketchup.platform == :platform_osx
+
   def self.create_step(index, title, &block)
     cmd = UI::Command.new(title, &block)
     cmd.tooltip = title
