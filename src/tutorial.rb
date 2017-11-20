@@ -16,8 +16,9 @@ module TutorialController
   def self.create_step(index, title, &block)
     cmd = UI::Command.new(title, &block)
     cmd.tooltip = title
+    ext = OSX ? 'pdf' : 'svg'
     # https://www.flaticon.com/free-icons/numbers_931
-    icon = File.join(__dir__, 'images', "#{index}.svg")
+    icon = File.join(__dir__, 'images', "#{index}.#{ext}")
     cmd.small_icon = icon
     cmd.large_icon = icon
     cmd
