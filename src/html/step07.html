@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="../vendor/Semantic-UI/semantic.min.css" rel="stylesheet">
-  <script src="../vendor/jquery.js"></script>
-  <script src="../vendor/Semantic-UI/semantic.min.js"></script>
+  <link href="../vendor/modus/modus.min.css" rel="stylesheet">
+  <script src="../vendor/modus/jquery.js"></script>
+  <script src="../vendor/modus/bootstrap.bundle.min.js"></script>
   <script src="../vendor/vue.js"></script>
   <style>
     /* Give the content some space */
     body {
-      padding: 15px;
+      /* padding: 15px; */
     }
     /* Fix footer position to bottom */
-    .footer {
+    #ui-footer {
       position: absolute;
       left: 0;
       right: 0;
@@ -45,24 +45,30 @@
       transform: translateX(-50%) translateY(-50%);
     }
     /* Fine tune input field sizes */
-    .ui.form .field .ui.label {
+    #ui-material .input-group-text {
       width: 60px;
+    }
+    #ui-rgba {
+      max-width: 128px;
+    }
+    .ui.form .field .ui.label {
+      /* width: 60px; */
     }
     .ui.form .field .ui.input {
-      width: 128px;
+      /* width: 128px; */
     }
     .ui.form .field .ui.input input {
-      width: 60px;
+      /* width: 60px; */
     }
   </style>
 </head>
 <body>
-  <div id="app">
+  <div id="app" class="container">
     <template v-if="material">
       <h2>{{ material.display_name }}</h2>
 
-      <div class="ui padded grid">
-        <div class="eight wide column">
+      <div class="row" id="ui-material">
+        <div class="col">
 
           <h3>Color</h3>
           <p class="preview">
@@ -70,44 +76,52 @@
             <span v-bind:style="colorPreviewAlpha">&nbsp;</span>
           </p>
 
-          <form class="ui form">
+          <div id="ui-rgba">
 
-            <div class="field">
-              <div class="ui mini labeled input">
-                <div class="ui label">Red</div>
-                <input type="number" placeholder="Red"
-                       v-model.number="material.color.red">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="ui-color-red">Red</span>
               </div>
+              <input type="number" min="0" max="255" class="form-control"
+                      placeholder="Red"
+                      aria-label="Red" aria-describedby="ui-color-red"
+                      v-model.number="material.color.red">
             </div>
 
-            <div class="field">
-              <div class="ui mini labeled input">
-                <div class="ui label">Green</div>
-                <input type="number" placeholder="Green"
-                       v-model.number="material.color.green">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="ui-color-green">Green</span>
               </div>
+              <input type="number" min="0" max="255" class="form-control"
+                      placeholder="Green"
+                      aria-label="Green" aria-describedby="ui-color-green"
+                      v-model.number="material.color.green">
             </div>
 
-            <div class="field">
-              <div class="ui mini labeled input">
-                <div class="ui label">Blue</div>
-                <input type="number" placeholder="Blue"
-                       v-model.number="material.color.blue">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="ui-color-blue">Blue</span>
               </div>
+              <input type="number" min="0" max="255" class="form-control"
+                      placeholder="Blue"
+                      aria-label="Blue" aria-describedby="ui-color-blue"
+                      v-model.number="material.color.blue">
             </div>
 
-            <div class="field">
-              <div class="ui mini labeled input">
-                <div class="ui label">Opacity</div>
-                <input type="number" placeholder="Opacity"
-                       v-model.number="opacity">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="ui-color-opacity">Opacity</span>
               </div>
+              <input type="number" min="0" max="100" class="form-control"
+                      placeholder="Opacity"
+                      aria-label="Opacity" aria-describedby="ui-color-opacity"
+                      v-model.number="opacity">
             </div>
 
-          </form>
+          </div>
 
         </div>
-        <div class="eight wide column">
+        <div class="col">
 
           <template v-if="material.texture">
             <h3>Texture</h3>
@@ -140,18 +154,13 @@
 
             </div>
 
-            <div class="ui form">
-              <div class="inline field">
-                <div class="ui slider checkbox">
-                  <input type="checkbox"
-                         v-bind:value="material.colorize_type"
-                         v-bind:checked="material.colorize_type == 1"
-                         v-on:change="material.colorize_type = ($event.target.checked) ? 1 : 0"
-                         >
-                  <label>Colorize</label>
-                </div>
-                <label></label>
-              </div>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="ui-colorize"
+                     v-bind:value="material.colorize_type"
+                     v-bind:checked="material.colorize_type == 1"
+                     v-on:change="material.colorize_type = ($event.target.checked) ? 1 : 0"
+                     >
+              <label class="custom-control-label" for="ui-colorize">Colorize</label>
             </div>
 
           </template>
@@ -165,13 +174,15 @@
       <p>Select an entity with a material.</p>
     </template>
 
-    <div class="ui padded grid footer">
-      <div class="four wide column">
-        <button class="ui button" v-on:click="save">Save</button>
-      </div>
-      <div class="twelve wide column right aligned">
-        <button class="ui button" v-on:click="cancel">Cancel</button>
-        <button class="ui button" v-on:click="accept">Accept</button>
+    <div class="container" id="ui-footer">
+      <div class="row">
+        <div class="col-4">
+          <button type="button" class="btn btn-secondary" v-on:click="save">Save</button>
+        </div>
+        <div class="col-8 text-right">
+          <button type="button" class="btn btn-secondary" v-on:click="cancel">Cancel</button>
+          <button type="button" class="btn btn-primary" v-on:click="accept">Accept</button>
+        </div>
       </div>
     </div>
   </div>
