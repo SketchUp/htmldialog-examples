@@ -6,10 +6,6 @@
   <script src="../vendor/modus/bootstrap.bundle.min.js"></script>
   <script src="../vendor/vue.js"></script>
   <style>
-    /* Give the content some space */
-    body {
-      /* padding: 15px; */
-    }
     /* Fix footer position to bottom */
     #ui-footer {
       position: absolute;
@@ -54,15 +50,6 @@
     }
     #ui-rgba {
       max-width: 128px;
-    }
-    .ui.form .field .ui.label {
-      /* width: 60px; */
-    }
-    .ui.form .field .ui.input {
-      /* width: 128px; */
-    }
-    .ui.form .field .ui.input input {
-      /* width: 60px; */
     }
   </style>
 </head>
@@ -135,7 +122,7 @@
 
             <div class="jumbotron p-2 mb-2">
               <b>Pixel Size:</b>
-              <div class="detail">
+              <div>
                 {{ material.texture.pixel_width }}
                 x
                 {{ material.texture.pixel_height }}
@@ -144,7 +131,7 @@
 
             <div class="jumbotron p-2 mb-2">
               <b>Model Size:</b>
-              <div class="detail">
+              <div>
                 {{ material.texture.model_width_formatted }}
                 x
                 {{ material.texture.model_height_formatted }}
