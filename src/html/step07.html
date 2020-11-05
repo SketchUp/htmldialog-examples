@@ -48,6 +48,10 @@
     #ui-material .input-group-text {
       width: 60px;
     }
+    #ui-material .jumbotron {
+      font-size: .75rem;
+      max-width: 128px;
+    }
     #ui-rgba {
       max-width: 128px;
     }
@@ -128,30 +132,23 @@
             <p class="preview">
               <img v-bind:src="texturePreview">
             </p>
-            <div class="ui one column vertically padded grid">
 
-              <div class="column">
-                <div class="ui label">
-                  Pixel Size:
-                  <div class="detail">
-                    {{ material.texture.pixel_width }}
-                    x
-                    {{ material.texture.pixel_height }}
-                  </div>
-                </div>
+            <div class="jumbotron p-2 mb-2">
+              <b>Pixel Size:</b>
+              <div class="detail">
+                {{ material.texture.pixel_width }}
+                x
+                {{ material.texture.pixel_height }}
               </div>
+            </div>
 
-              <div class="column">
-                <div class="ui label">
-                  Model Size:
-                  <div class="detail">
-                    {{ material.texture.model_width_formatted }}
-                    x
-                    {{ material.texture.model_height_formatted }}
-                  </div>
-                </div>
+            <div class="jumbotron p-2 mb-2">
+              <b>Model Size:</b>
+              <div class="detail">
+                {{ material.texture.model_width_formatted }}
+                x
+                {{ material.texture.model_height_formatted }}
               </div>
-
             </div>
 
             <div class="custom-control custom-switch">
@@ -175,7 +172,7 @@
     </template>
 
     <div class="container" id="ui-footer">
-      <div class="row">
+      <div class="row py-2">
         <div class="col-4">
           <button type="button" class="btn btn-secondary" v-on:click="save">Save</button>
         </div>

@@ -16,10 +16,12 @@ module Step07
       # Set a fixed size now that we know the content size.
       :resizable => false,
       :width => 350,
-      :height => 530,
+      :height => 500,
     }
     dialog = UI::HtmlDialog.new(options)
     dialog.set_size(options[:width], options[:height]) # Ensure size is set.
+    # width: 318 (15 + 128 + 15 + 15 + 128 + 15)
+    # dialog.set_content_size(options[:width], options[:height])
     dialog.set_file(html_file)
     dialog.center
     dialog
