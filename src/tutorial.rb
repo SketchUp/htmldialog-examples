@@ -27,31 +27,31 @@ module TutorialController
   end
 
   unless file_loaded?(__FILE__)
-    step01 = self.create_step(1, 'Step 01') {
+    step01 = self.create_step(1, 'Step 01 - Basic Usage') {
       TUTORIALS::Step01.show_dialog
     }
 
-    step02 = self.create_step(2, 'Step 02') {
+    step02 = self.create_step(2, 'Step 02 - (Partially) Reusable window') {
       TUTORIALS::Step02.show_dialog
     }
 
-    step03 = self.create_step(3, 'Step 03') {
+    step03 = self.create_step(3, 'Step 03 - (Fully) Reusable Window') {
       TUTORIALS::Step03.show_dialog
     }
 
-    step04 = self.create_step(4, 'Step 04') {
+    step04 = self.create_step(4, 'Step 04 - Adding JS Framework') {
       TUTORIALS::Step04.show_dialog
     }
 
-    step05 = self.create_step(5, 'Step 05') {
+    step05 = self.create_step(5, 'Step 05 - Realistic Example') {
       TUTORIALS::Step05.show_dialog
     }
 
-    step06 = self.create_step(6, 'Step 06') {
+    step06 = self.create_step(6, 'Step 06 - Adding UI Framework') {
       TUTORIALS::Step06.show_dialog
     }
 
-    step07 = self.create_step(7, 'Step 07') {
+    step07 = self.create_step(7, 'Step 07 - Tuning UI') {
       TUTORIALS::Step07.show_dialog
     }
 
@@ -59,8 +59,10 @@ module TutorialController
     toolbar.add_item(step01)
     toolbar.add_item(step02)
     toolbar.add_item(step03)
+    toolbar.add_separator
     toolbar.add_item(step04)
     toolbar.add_item(step05)
+    toolbar.add_separator
     toolbar.add_item(step06)
     toolbar.add_item(step07)
     toolbar.restore

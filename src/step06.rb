@@ -22,20 +22,20 @@ module Step06
 
   def self.show_dialog
     @dialog ||= self.create_dialog
-    @dialog.add_action_callback("ready") { |action_context|
+    @dialog.add_action_callback("ready") {
       self.update_dialog
       nil
     }
-    @dialog.add_action_callback("accept") { |action_context, value|
+    @dialog.add_action_callback("accept") { |_, value|
       self.update_material(value)
       @dialog.close
       nil
     }
-    @dialog.add_action_callback("cancel") { |action_context, value|
+    @dialog.add_action_callback("cancel") { |_, value|
       @dialog.close
       nil
     }
-    @dialog.add_action_callback("save") { |action_context, value|
+    @dialog.add_action_callback("apply") { |_, value|
       self.update_material(value)
       nil
     }

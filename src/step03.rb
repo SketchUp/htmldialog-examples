@@ -19,6 +19,8 @@ module Step03
     if @dialog && @dialog.visible?
       @dialog.bring_to_front
     else
+      # Attach content and callbacks when showing the dialog,
+      # not when creating it, to be able to use the same dialog again.
       html = <<-EOT
         <h1>Hello World<h1>
         <p><button onclick="sketchup.poke('Thom', 3)">Poke</button></p>

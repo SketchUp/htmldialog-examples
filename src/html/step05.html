@@ -76,9 +76,9 @@
     </template>
 
     <div class="footer">
-      <button v-on:click="save">Save</button>
+      <button v-on:click="apply">Apply</button>
       <button v-on:click="cancel">Cancel</button>
-      <button v-on:click="accept">Accept</button>
+      <button v-on:click="accept">OK</button>
     </div>
 
   </div>
@@ -100,8 +100,8 @@
         }
       },
       methods: {
-        save: function() {
-          sketchup.save(this.material);
+        apply: function() {
+          sketchup.apply(this.material);
         },
         accept: function() {
           sketchup.accept(this.material);
