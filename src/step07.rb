@@ -9,17 +9,25 @@ module Step07
 
   def self.create_dialog
     html_file = File.join(__dir__, 'html', 'step07.html')
+    # Define pixel perfect dimensions matching our content.
+    width = 15 + 128 + 15 + 15 + 128 + 15
+    height = 470
+    # Add some extra space for older SU versions that don't support inner sizing.
+    if Sketchup.version.to_f < 21.1
+      width += 20
+      height += 40
+    end
     options = {
       :dialog_title => "Material",
-      :preferences_key => "example.htmldialog.materialinspector",
+      :preferences_key => "com.sketchup.example.htmldialog.materialinspector",
       :style => UI::HtmlDialog::STYLE_DIALOG,
       # Set a fixed size now that we know the content size.
       :resizable => false,
-      :width => 350,
-      :height => 530,
+      :width => width,
+      :height => height,
+      :use_content_size => true
     }
     dialog = UI::HtmlDialog.new(options)
-    dialog.set_size(options[:width], options[:height]) # Ensure size is set.
     dialog.set_file(html_file)
     dialog.center
     dialog
@@ -27,20 +35,20 @@ module Step07
 
   def self.show_dialog
     @dialog ||= self.create_dialog
-    @dialog.add_action_callback("ready") { |action_context|
+    @dialog.add_action_callback("ready") {
       self.update_dialog
       nil
     }
-    @dialog.add_action_callback("accept") { |action_context, value|
+    @dialog.add_action_callback("accept") { |_, value|
       self.update_material(value)
       @dialog.close
       nil
     }
-    @dialog.add_action_callback("cancel") { |action_context, value|
+    @dialog.add_action_callback("cancel") { |_, value|
       @dialog.close
       nil
     }
-    @dialog.add_action_callback("save") { |action_context, value|
+    @dialog.add_action_callback("apply") { |_, value|
       self.update_material(value)
       nil
     }

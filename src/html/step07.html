@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="../vendor/Semantic-UI/semantic.min.css" rel="stylesheet">
-  <script src="../vendor/jquery.js"></script>
-  <script src="../vendor/Semantic-UI/semantic.min.js"></script>
+  <link href="../vendor/modus/modus.min.css" rel="stylesheet">
+  <script src="../vendor/modus/jquery.js"></script>
+  <script src="../vendor/modus/bootstrap.bundle.min.js"></script>
   <script src="../vendor/vue.js"></script>
   <style>
-    /* Give the content some space */
-    body {
-      padding: 15px;
+    .container {
+      padding-top: 15px;
     }
     /* Fix footer position to bottom */
-    .footer {
+    #ui-footer {
       position: absolute;
       left: 0;
       right: 0;
-      bottom: 0;
-      background: white;
-      border-top: 1px solid silver;
+      bottom: 15px;
+    }
+    /* Override somewhat arbitrary bottom button bottom spacing set by modus */
+    .row {
+      padding-bottom: 0 !important;
     }
     /* Define a 128x128 preview square */
     .preview {
@@ -44,25 +45,30 @@
       left: 50%;
       transform: translateX(-50%) translateY(-50%);
     }
+    /* Prevent word wrapping between "~", number and unit in lengths */
+    .length {
+      white-space: nowrap;
+    }
     /* Fine tune input field sizes */
-    .ui.form .field .ui.label {
+    #ui-material .input-group-text {
       width: 60px;
     }
-    .ui.form .field .ui.input {
-      width: 128px;
+    #ui-material .jumbotron {
+      font-size: .75rem;
+      max-width: 128px;
     }
-    .ui.form .field .ui.input input {
-      width: 60px;
+    #ui-rgba {
+      max-width: 128px;
     }
   </style>
 </head>
-<body>
-  <div id="app">
+<body class="bg-panel-background">
+  <div id="app" class="container">
     <template v-if="material">
       <h2>{{ material.display_name }}</h2>
 
-      <div class="ui padded grid">
-        <div class="eight wide column">
+      <div class="row" id="ui-material">
+        <div class="col">
 
           <h3>Color</h3>
           <p class="preview">
@@ -70,88 +76,84 @@
             <span v-bind:style="colorPreviewAlpha">&nbsp;</span>
           </p>
 
-          <form class="ui form">
+          <div id="ui-rgba">
 
-            <div class="field">
-              <div class="ui mini labeled input">
-                <div class="ui label">Red</div>
-                <input type="number" placeholder="Red"
-                       v-model.number="material.color.red">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="ui-color-red">Red</span>
               </div>
+              <input type="number" min="0" max="255" class="form-control"
+                      placeholder="Red"
+                      aria-label="Red" aria-describedby="ui-color-red"
+                      v-model.number="material.color.red">
             </div>
 
-            <div class="field">
-              <div class="ui mini labeled input">
-                <div class="ui label">Green</div>
-                <input type="number" placeholder="Green"
-                       v-model.number="material.color.green">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="ui-color-green">Green</span>
               </div>
+              <input type="number" min="0" max="255" class="form-control"
+                      placeholder="Green"
+                      aria-label="Green" aria-describedby="ui-color-green"
+                      v-model.number="material.color.green">
             </div>
 
-            <div class="field">
-              <div class="ui mini labeled input">
-                <div class="ui label">Blue</div>
-                <input type="number" placeholder="Blue"
-                       v-model.number="material.color.blue">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="ui-color-blue">Blue</span>
               </div>
+              <input type="number" min="0" max="255" class="form-control"
+                      placeholder="Blue"
+                      aria-label="Blue" aria-describedby="ui-color-blue"
+                      v-model.number="material.color.blue">
             </div>
 
-            <div class="field">
-              <div class="ui mini labeled input">
-                <div class="ui label">Opacity</div>
-                <input type="number" placeholder="Opacity"
-                       v-model.number="opacity">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="ui-color-opacity">Opacity</span>
               </div>
+              <input type="number" min="0" max="100" class="form-control"
+                      placeholder="Opacity"
+                      aria-label="Opacity" aria-describedby="ui-color-opacity"
+                      v-model.number="opacity">
             </div>
 
-          </form>
+          </div>
 
         </div>
-        <div class="eight wide column">
+        <div class="col">
 
           <template v-if="material.texture">
             <h3>Texture</h3>
             <p class="preview">
               <img v-bind:src="texturePreview">
             </p>
-            <div class="ui one column vertically padded grid">
 
-              <div class="column">
-                <div class="ui label">
-                  Pixel Size:
-                  <div class="detail">
-                    {{ material.texture.pixel_width }}
-                    x
-                    {{ material.texture.pixel_height }}
-                  </div>
-                </div>
+            <div class="jumbotron p-2 mb-2">
+              <b>Pixel Size:</b>
+              <div>
+                {{ material.texture.pixel_width }}
+                x
+                {{ material.texture.pixel_height }}
               </div>
-
-              <div class="column">
-                <div class="ui label">
-                  Model Size:
-                  <div class="detail">
-                    {{ material.texture.model_width_formatted }}
-                    x
-                    {{ material.texture.model_height_formatted }}
-                  </div>
-                </div>
-              </div>
-
             </div>
 
-            <div class="ui form">
-              <div class="inline field">
-                <div class="ui slider checkbox">
-                  <input type="checkbox"
-                         v-bind:value="material.colorize_type"
-                         v-bind:checked="material.colorize_type == 1"
-                         v-on:change="material.colorize_type = ($event.target.checked) ? 1 : 0"
-                         >
-                  <label>Colorize</label>
-                </div>
-                <label></label>
+            <div class="jumbotron p-2 mb-2">
+              <b>Model Size:</b>
+              <div>
+                <span class="length">{{ material.texture.model_width_formatted }}</span>
+                x
+                <span class="length">{{ material.texture.model_height_formatted }}</span>
               </div>
+            </div>
+
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="ui-colorize"
+                     v-bind:value="material.colorize_type"
+                     v-bind:checked="material.colorize_type == 1"
+                     v-on:change="material.colorize_type = ($event.target.checked) ? 1 : 0"
+                     >
+              <label class="custom-control-label" for="ui-colorize">Colorize</label>
             </div>
 
           </template>
@@ -165,13 +167,15 @@
       <p>Select an entity with a material.</p>
     </template>
 
-    <div class="ui padded grid footer">
-      <div class="four wide column">
-        <button class="ui button" v-on:click="save">Save</button>
-      </div>
-      <div class="twelve wide column right aligned">
-        <button class="ui button" v-on:click="cancel">Cancel</button>
-        <button class="ui button" v-on:click="accept">Accept</button>
+    <div class="container" id="ui-footer">
+      <div class="row py-2">
+        <div class="col-4">
+          <button type="button" class="btn btn-outline-primary" v-on:click="apply">Apply</button>
+        </div>
+        <div class="col-8 text-right">
+          <button type="button" class="btn btn-outline-primary" v-on:click="cancel">Cancel</button>
+          <button type="button" class="btn btn-primary" v-on:click="accept">Ok</button>
+        </div>
       </div>
     </div>
   </div>
@@ -208,7 +212,8 @@
           };
         },
         texturePreview: function() {
-          // Forces the browser to reload the image.
+          // Appending a dummy query parameter forces the browser to reload the
+          // image.
           return `../images/preview.png?rnd=${this.tick}`
         },
         opacity: {
@@ -221,8 +226,8 @@
         }
       },
       methods: {
-        save: function() {
-          sketchup.save(this.material);
+        apply: function() {
+          sketchup.apply(this.material);
         },
         accept: function() {
           sketchup.accept(this.material);

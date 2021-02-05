@@ -36,7 +36,7 @@ module Step05
       @dialog.close
       nil
     }
-    @dialog.add_action_callback("save") { |action_context, value|
+    @dialog.add_action_callback("apply") { |action_context, value|
       self.update_material(value)
       nil
     }

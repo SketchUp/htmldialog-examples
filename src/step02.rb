@@ -6,6 +6,10 @@ module Step02
   # However, html and action callbacks not reusable.
 
   def self.create_dialog
+    # The callbacks here only work the first time the dialog is shown and are
+    # lost when it is closed.
+    # Example 03 shows how to reattach the callbacks each time the dialog is
+    # shown.
     html = <<-EOT
     <h1>Hello World<h1>
     <p><button onclick="sketchup.poke('Thom', 3)">Poke</button></p>
