@@ -1,10 +1,10 @@
-require 'step01.rb'
-require 'step02.rb'
-require 'step03.rb'
-require 'step04.rb'
-require 'step05.rb'
-require 'step06.rb'
-require 'step07.rb'
+require_relative 'step01.rb'
+require_relative 'step02.rb'
+require_relative 'step03.rb'
+require_relative 'step04.rb'
+require_relative 'step05.rb'
+require_relative 'step06.rb'
+require_relative 'step07.rb'
 
 require 'sketchup.rb'
 
