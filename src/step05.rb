@@ -11,7 +11,7 @@ module Step05
   def self.create_dialog
     html_file = File.join(__dir__, 'html', 'step05.html')
     options = {
-      :dialog_title => "Material",
+      :dialog_title => "05 Material",
       :preferences_key => "example.htmldialog.materialinspector",
       :style => UI::HtmlDialog::STYLE_DIALOG
     }
