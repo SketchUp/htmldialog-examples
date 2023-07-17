@@ -11,7 +11,7 @@ module Step01
     <p><button onclick="sketchup.poke('Thom', 3)">Poke</button></p>
 EOT
     options = {
-      :dialog_title => "Material",
+      :dialog_title => "01 Material",
       :preferences_key => "example.htmldialog.materialinspector",
       :style => UI::HtmlDialog::STYLE_DIALOG  # New feature!
     }

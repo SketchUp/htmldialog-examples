@@ -18,7 +18,7 @@ module Step07
       height += 40
     end
     options = {
-      :dialog_title => "Material",
+      :dialog_title => "07 Material",
       :preferences_key => "com.sketchup.example.htmldialog.materialinspector",
       :style => UI::HtmlDialog::STYLE_DIALOG,
       # Set a fixed size now that we know the content size.

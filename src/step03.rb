@@ -6,7 +6,7 @@ module Step03
 
   def self.create_dialog
     options = {
-      :dialog_title => "Material",
+      :dialog_title => "03 Material",
       :preferences_key => "example.htmldialog.materialinspector",
       :style => UI::HtmlDialog::STYLE_DIALOG
     }
