@@ -17,6 +17,9 @@ module Step07
       width += 20
       height += 40
     end
+    if Sketchup.version.to_f >= 24.0
+      height += 20
+    end
     options = {
       :dialog_title => "Material",
       :preferences_key => "com.sketchup.example.htmldialog.materialinspector",
