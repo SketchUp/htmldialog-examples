@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="../vendor/modus/modus.min.css" rel="stylesheet">
+  <script src="../vendor/modus/jquery.js"></script>
+  <script src="../vendor/modus/bootstrap.bundle.min.js"></script>
+  <script src="../vendor/vue.js"></script>
+  <style>
+    .container {
+      padding-top: 15px;
+    }
+    /* Fix footer position to bottom */
+    #ui-footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 15px;
+    }
+    /* Override somewhat arbitrary bottom button bottom spacing set by modus */
+    .row {
+      padding-bottom: 0 !important;
+    }
+    /* Define a 128x128 preview square */
+    .preview {
+      position: relative;
+      display: inline-block;
+      width: 128px;
+      height: 128px;
+      font-size: 0px;
+      background: url('../images/transparent.png');
+      overflow: hidden;
+    }
+    .preview span {
+      display: inline-block;
+      width: 50%;
+      height: 100%;
+    }
+    .preview img {
+      display: inline-block;
+      max-width: 100%;
+      max-height: 100%;
+      /* Center element */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+    }
+    /* Prevent word wrapping between "~", number and unit in lengths */
+    .length {
+      white-space: nowrap;
+    }
+    /* Fine tune input field sizes */
+    #ui-material .input-group-text {
+      width: 60px;
+    }
+    #ui-material .jumbotron {
+      font-size: .75rem;
+      max-width: 128px;
+    }
+    #ui-rgba {
+      max-width: 128px;
+    }
+
+    .material {
+      display: inline-block;
+      border: 1px solid silver;
+    }
+  </style>
+</head>
+<body class="bg-panel-background">
+  <div id="app" class="container">
+    <div v-for="material in materials" class="material">
+      <h2>{{ material.title }}</h2>
+      <div>
+        <img v-bind:src="material.thumb_uri" width="256" height="256">
+      </div>
+      <div>
+        <button
+          type="button" class="btn btn-outline-primary"
+          v-on:click="download(material)">Download</button>
+      </div>
+    </div>
+
+    <div class="container" id="ui-footer">
+      <div class="row py-2">
+        <div class="col-4">
+          <button type="button" class="btn btn-outline-primary" v-on:click="apply">Apply</button>
+        </div>
+        <div class="col-8 text-right">
+          <button type="button" class="btn btn-outline-primary" v-on:click="cancel">Cancel</button>
+          <button type="button" class="btn btn-primary" v-on:click="accept">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        tick: 0,
+        materials: [],
+      },
+      computed: {
+        colorPreviewAlpha: function() {
+          if (this.material === null) {
+            return {};
+          }
+          var r = this.material.color.red;
+          var g = this.material.color.green;
+          var b = this.material.color.blue;
+          var a = this.material.alpha;
+          return {
+            backgroundColor: `rgba(${r},${g},${b},${a})`
+          };
+        },
+        colorPreviewSolid: function() {
+          if (this.material === null) {
+            return {};
+          }
+          var r = this.material.color.red;
+          var g = this.material.color.green;
+          var b = this.material.color.blue;
+          return {
+            backgroundColor: `rgb(${r},${g},${b})`
+          };
+        },
+        texturePreview: function() {
+          // Appending a dummy query parameter forces the browser to reload the
+          // image.
+          return `../images/preview.png?rnd=${this.tick}`
+        },
+        opacity: {
+          get() {
+            return (this.material) ? Math.round(this.material.alpha * 100) : 0;
+          },
+          set(value) {
+            this.material.alpha = value / 100.0
+          }
+        }
+      },
+      methods: {
+        download: function(material) {
+          console.log('download', material);
+          // sketchup.download(material);
+        },
+        apply: function() {
+          sketchup.apply(this.material);
+        },
+        accept: function() {
+          sketchup.accept(this.material);
+        },
+        cancel: function() {
+          sketchup.cancel();
+        },
+      },
+      mounted: function() {
+        sketchup.ready();
+      },
+    });
+
+    function updateMaterials(materials) {
+      app.tick += 1; // Update to ensure thumbnail is reloaded.
+      app.materials = materials;
+    }
+  </script>
+</body>
+</html>

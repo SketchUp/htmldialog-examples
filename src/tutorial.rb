@@ -55,6 +55,10 @@ module TutorialController
       TUTORIALS::Step07.show_dialog
     }
 
+    step08 = self.create_step(8, 'Step 08 - Prototype') {
+      TUTORIALS::Step08.show_dialog
+    }
+
     toolbar = UI::Toolbar.new('HtmlDialog Examples')
     toolbar.add_item(step01)
     toolbar.add_item(step02)
@@ -65,6 +69,8 @@ module TutorialController
     toolbar.add_separator
     toolbar.add_item(step06)
     toolbar.add_item(step07)
+    toolbar.add_separator
+    toolbar.add_item(step08)
     toolbar.restore
     file_loaded(__FILE__)
   end
