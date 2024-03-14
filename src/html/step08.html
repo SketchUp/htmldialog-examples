@@ -84,7 +84,7 @@
     <div class="container" id="ui-footer">
       <div class="row py-2">
         <div class="col-4">
-          <button type="button" class="btn btn-outline-primary" v-on:click="apply">Apply</button>
+          <!-- <button type="button" class="btn btn-outline-primary" v-on:click="apply">Apply</button> -->
         </div>
         <div class="col-8 text-right">
           <button type="button" class="btn btn-outline-primary" v-on:click="cancel">Cancel</button>
@@ -142,7 +142,7 @@
       methods: {
         download: function(material) {
           console.log('download', material);
-          // sketchup.download(material);
+          sketchup.download(material);
         },
         apply: function() {
           sketchup.apply(this.material);

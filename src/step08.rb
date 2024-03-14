@@ -1,6 +1,8 @@
 require 'sketchup.rb'
 require 'json'
-# require 'rexml/document'
+require 'fileutils'
+require 'rexml/document'
+require 'rexml/xpath'
 
 # load 'C:/Users/tthomas2/SourceTree/htmldialog-examples/src/step08.rb'
 module Examples
@@ -59,6 +61,7 @@ module Step08
     assets_data.each { |title_attr, asset_data|
       # p asset_data.size
       title = title_attr.lines.first.strip
+      title = title[title.index(' ')...].strip # strip away emoji prefix
       # puts title
       # puts asset_data
       matches = asset_data.scan(asset_regex)
@@ -76,6 +79,193 @@ module Step08
     result
   end
 
+  # @param [Hash] material_data
+  def self.fetch_download_data(material_data)
+    puts "Fetch download data: #{material_data['title']}"
+    base = 'https://ambientcg.com'
+    uri = "#{base}#{material_data['uri']}"
+    @download_data_request = Sketchup::Http::Request.new(uri, Sketchup::Http::GET)
+    @download_data_request.start do |request, response|
+      puts "Response: #{response.status_code}"
+      self.parse_download_data(response, material_data)
+    end
+    nil
+  end
+
+  # @param [Sketchup::HTTP::Response] response
+  # @param [Hash] material_data
+  def self.parse_download_data(response, material_data)
+    data = response.body
+    # TODO: Multiple downloads available.
+    download_regex = /<div\s+class='DownloadButtons'>\s*<a\s+.*?\s+href="([^"]+)"/m
+    download_uri = data.scan(download_regex).first.first
+    p download_uri
+    material_data['download_uri'] = download_uri
+    self.download_material(material_data)
+    nil
+  end
+
+  # @param [Hash] material_data
+  def self.download_material(material_data)
+    puts "Downloading material: #{material_data['title']}"
+    uri = material_data['download_uri']
+    p uri
+    @download_request = Sketchup::Http::Request.new(uri, Sketchup::Http::GET)
+    @download_request.start do |request, response|
+      puts "Response: #{response.status_code}"
+      self.load_material(response, material_data)
+    end
+    nil
+  end
+
+  # @param [Sketchup::HTTP::Response] response
+  # @param [Hash] material_data
+  def self.load_material(response, material_data)
+    data = response.body
+    temp_path = File.join(Sketchup.temp_dir, 'su-pbr.zip')
+    puts temp_path
+    File.binwrite(temp_path, data)
+    self.extract_pbr_zip(temp_path, material_data)
+    nil
+  end
+
+  # @param [String] temp_path
+  # @param [Hash] material_data
+  def self.extract_pbr_zip(temp_path, material_data)
+    puts "Extracting PBR ZIP: #{temp_path}"
+
+    # puts temp_path
+    # p material_data
+    out_path = File.join(Sketchup.temp_dir, 'su-pbr')
+    if File.exist?(out_path)
+      puts 'Cleaning out old temp dir...'
+      FileUtils.rm_r(out_path)
+    end
+    FileUtils.mkdir_p(out_path)
+    puts %{tar -xf "#{temp_path}" -C "#{out_path}"}
+    `tar -xf "#{temp_path}" -C "#{out_path}"`
+    puts "Output dir exists: #{File.exist?(out_path)} (#{out_path})"
+
+    pattern = File.join(out_path, '*.mtlx')
+    mtlx_path = Dir.glob(pattern).to_a.first
+    mtlx_data = File.read(mtlx_path)
+    doc = REXML::Document.new(mtlx_data)
+
+    base_path = nil
+    metallness_path = nil
+    roughness_path = nil
+    normal_path = nil
+    ao_path = nil
+
+    REXML::XPath.each(doc, "/materialx/standard_surface/input") { |node|
+
+      if node['name'] == 'base_color'
+        node_name = node['nodename']
+        REXML::XPath.each(doc, "/materialx/tiledimage") { |n|
+          next unless n['name'] == node_name
+
+          REXML::XPath.each(n, "input") { |input|
+            next unless input['type'] == 'filename'
+
+            base_path = File.join(out_path, input['value'])
+          }
+        }
+      end
+
+      # TODO: Correct to assign this to metalness?
+      if node['name'] == 'specular_roughness'
+        node_name = node['nodename']
+        REXML::XPath.each(doc, "/materialx/tiledimage") { |n|
+          next unless n['name'] == node_name
+
+          REXML::XPath.each(n, "input") { |input|
+            next unless input['type'] == 'filename'
+
+            metallness_path = File.join(out_path, input['value'])
+          }
+        }
+      end
+
+      if node['name'] == 'coat_roughness'
+        node_name = node['nodename']
+        REXML::XPath.each(doc, "/materialx/tiledimage") { |n|
+          next unless n['name'] == node_name
+
+          REXML::XPath.each(n, "input") { |input|
+            next unless input['type'] == 'filename'
+
+            roughness_path = File.join(out_path, input['value'])
+          }
+        }
+      end
+
+      if node['name'] == 'normal'
+        node_name = node['nodename']
+        # p node
+        # p node_name
+        REXML::XPath.each(doc, "/materialx/normalmap") { |n|
+          next unless n['name'] == node_name
+
+          REXML::XPath.each(n, "input") { |input|
+            normal_node_name = input['nodename']
+            next unless normal_node_name
+
+            # p normal_node_name
+            REXML::XPath.each(doc, "/materialx/tiledimage") { |n|
+              next unless n['name'] == normal_node_name
+
+              REXML::XPath.each(n, "input") { |input|
+                next unless input['type'] == 'filename'
+
+                normal_path = File.join(out_path, input['value'])
+              }
+            }
+          }
+        }
+      end
+    }
+
+    ao_temp_path = base_path.sub('_Color.', '_AmbientOcclusion.')
+    ao_path = ao_temp_path if File.exist?(ao_temp_path)
+
+    [base_path, roughness_path, normal_path, ao_path].each { |path|
+      p [path ? File.exist?(path): nil, path]
+    }
+
+    image_rep = Sketchup::ImageRep.new(base_path)
+    w = image_rep.width
+    h = image_rep.height
+    image_rep.set_data(1, 1, 8, 0, "\0")
+
+    r = h.to_f / w.to_f
+    mw = 1.m
+    mh = mw * r
+
+    model = Sketchup.active_model
+    model.start_operation('Load PBR Material', true)
+    material = model.materials.add(name)
+    material.texture = [base_path, mw, mh]
+    material.roughness_texture = roughness_path if File.exist?(roughness_path)
+    material.normal_texture = normal_path if File.exist?(normal_path)
+    material.ao_texture = ao_path if File.exist?(ao_path)
+    model.commit_operation
+
+    nil
+  end
+
+  # Examples::MaterialInspector::Step08.extract_debug
+  def self.extract_debug
+    path = 'C:/Users/tthomas2/AppData/Local/Temp/su-pbr.zip'
+    data = {
+      "thumb_uri"=>"https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-JPG-242424/PavingStones138.jpg",
+      "title"=>"Paving Stones 138",
+      "uri"=>"/view?id=PavingStones138",
+      "download_uri"=>"https://ambientcg.com/get?file=PavingStones138_1K-JPG.zip"
+    }
+    self.extract_pbr_zip(path, data)
+    nil
+  end
+
   def self.show_dialog
     # @dialog ||= self.create_dialog
     @dialog = self.create_dialog
@@ -84,7 +274,7 @@ module Step08
       nil
     }
     @dialog.add_action_callback("accept") { |_, value|
-      self.update_material(value)
+      # self.update_material(value)
       @dialog.close
       nil
     }
@@ -92,8 +282,9 @@ module Step08
       @dialog.close
       nil
     }
-    @dialog.add_action_callback("apply") { |_, value|
-      self.update_material(value)
+    @dialog.add_action_callback("download") { |_, value|
+      p value
+      self.fetch_download_data(value)
       nil
     }
     @dialog.show
