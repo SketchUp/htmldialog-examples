@@ -245,9 +245,9 @@ module Step08
     model.start_operation('Load PBR Material', true)
     material = model.materials.add(name)
     material.texture = [base_path, mw, mh]
-    material.roughness_texture = roughness_path if File.exist?(roughness_path)
-    material.normal_texture = normal_path if File.exist?(normal_path)
-    material.ao_texture = ao_path if File.exist?(ao_path)
+    material.roughness_texture = roughness_path if roughness_path && File.exist?(roughness_path)
+    material.normal_texture = normal_path if normal_path && File.exist?(normal_path)
+    material.ao_texture = ao_path if ao_path && File.exist?(ao_path)
     model.commit_operation
 
     nil
