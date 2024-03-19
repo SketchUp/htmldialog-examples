@@ -151,6 +151,8 @@ module Step08
     mtlx_data = File.read(mtlx_path)
     doc = REXML::Document.new(mtlx_data)
 
+    material_name = File.basename(mtlx_path, '.*')
+
     base_path = nil
     metallness_path = nil
     roughness_path = nil
@@ -243,7 +245,7 @@ module Step08
 
     model = Sketchup.active_model
     model.start_operation('Load PBR Material', true)
-    material = model.materials.add(name)
+    material = model.materials.add(material_name)
     material.texture = [base_path, mw, mh]
     material.roughness_texture = roughness_path if roughness_path && File.exist?(roughness_path)
     material.normal_texture = normal_path if normal_path && File.exist?(normal_path)
